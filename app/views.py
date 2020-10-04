@@ -4,6 +4,7 @@ from controllers.predict import Predict
 from werkzeug.utils import secure_filename
 import os
 from app import app
+import base64
 
 
 @app.route('/', methods=["GET"])
@@ -33,10 +34,12 @@ def upload_image():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        prediction = Predict()
-        pneumonia, image_name = prediction.pneumonia_classification(filename)
+        predict = Predict()
+        prediction, image_name, percentage = predict.pneumonia_classification(filename)
         flash('Image successfully uploaded and displayed')
-        return render_template('index.html', name=name, filename=image_name, pneumonia=pneumonia)
+        with open(image_name, "rb") as image_file:
+            image_name = base64.b64encode(image_file.read())
+        return render_template('index.html', name=name, filename=image_name.decode('utf-8'), prediction=prediction, percentage=percentage)
     else:
         flash('Allowed image types are -> png, jpg, jpeg, gif')
         return redirect(request.url)
@@ -47,4 +50,3 @@ def display_image(filename):
     # print('display_image filename: ' + filename)
     return send_from_directory(app.static_folder, filename)
     # return redirect(url_for('storage', filename='uploads/' + filename), code=301)
-
