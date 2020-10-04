@@ -38,18 +38,21 @@
                 {% endwith %}
             </p>
             {% if filename %}
-            {{test}}
-            <div>{{ pneumonia }}</div>
+
+            <div>
+                <h5>Model Prediction</h5>
+                {{ prediction }}
+            </div>
+            <div>
+                Normal: {{percentage[0]}}, Pneumonic:{{percentage[1]}}
+            </div>
                 <div>
-                    <img src="{{ url_for('display_image', filename=filename) }}">
-                    <img src="{{ filename }}">
+<!--                    <img src="{{ url_for('display_image', filename=filename) }}">-->
+                    <img src="{{ 'data:image/png;base64,' + filename }}" width="200px">
                 </div>
             {% endif %}
         </div>
     </div>
 </div>
-
-
-
 </body>
 </html>
